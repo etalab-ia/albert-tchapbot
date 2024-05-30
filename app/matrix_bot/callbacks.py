@@ -123,6 +123,17 @@ class Callbacks:
         except Exception as join_room_exception:
             logger.info(f"Failed to join {room.room_id}", join_room_exceptions=join_room_exception)
 
+        # If the room has more than 2 members, we leave it
+        if len(room.users) > 2:
+            # Send a message to the room to say that we are leaving
+            await self.matrix_client.send_text_message(
+                room.room_id,
+                "Albert n'accepte pas encore les salons avec plus d'un interlocuteur et quitte donc la conversation. En attendant, vous pouvez toujours lui parler en privé !",
+                msgtype="m.notice",
+            )
+            await self.matrix_client.room_leave(room.room_id)
+            logger.info(f"Left {room.room_id} because it has more than 2 members")
+
     async def decryption_failure(self, room: MatrixRoom, event: MegolmEvent):
         """Callback for handling decryption errors."""
         if not isinstance(event, MegolmEvent):
