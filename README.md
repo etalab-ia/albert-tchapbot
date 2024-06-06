@@ -88,6 +88,20 @@ cd app
 docker compose up --detach
 ```
 
+### Exécution des tests
+
+1. Activer l'environnement virtuel et installer les dépendances de développement.
+
+2. Naviguer dans le répertoire `app` :
+```bash
+cd app
+```
+
+3. Exécuter les tests avec :
+```bash
+pytest
+```
+
 
 ### Troubleshooting
 
@@ -196,6 +210,20 @@ cd app
 2. Launch the bot container at the root of the project:
 ```bash
 docker compose up --detach
+```
+
+### Run tests
+
+1. Activate the virtual environment and install the dev dependencies.
+
+2. Navigate to the `app` directory:
+```bash
+cd app
+```
+
+1. Run the tests with:
+```bash
+pytest
 ```
 
 ### Troubleshooting
