@@ -5,6 +5,7 @@
 # Project-specific
 store
 session.txt
+users.json
 
 *.pyc
 __pycache__

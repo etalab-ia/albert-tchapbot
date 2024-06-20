@@ -52,7 +52,6 @@ jobs:
         run: |
           cd ./${{ env.CI_JOB_ID }}
           touch .env
-          echo JOIN_ON_INVITE=${{ vars.JOIN_ON_INVITE }} >> .env
           echo SALT=${{ secrets.SALT }} >> .env
           echo MATRIX_HOME_SERVER=${{ secrets.MATRIX_HOME_SERVER }} >> .env
           echo MATRIX_BOT_USERNAME=${{ secrets.MATRIX_BOT_USERNAME }} >> .env

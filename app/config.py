@@ -8,7 +8,7 @@ import time
 import tomllib
 from pathlib import Path
 
-from matrix_bot.config import bot_lib_config
+from matrix_bot.config import bot_lib_config, logger
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -45,7 +45,8 @@ class Config(BaseConfig):
         description="List of allowed Tchap users email domains allowed to use Albert Tchap",
     )
     groups_used: list[str] = Field(["basic"], description="List of commands groups to use")
-    last_activity: int = Field(int(time.time()), description="Last activity timestamp")
+    last_activity: int | None = Field(None, description="Last activity timestamp")
+    authorized: bool | None = Field(None, description="is the user authorized to use the bot")
     # Albert API settings
     albert_api_url: str = Field("http://localhost:8090/api/v2", description="Albert API base URL")
     albert_api_token: str = Field("", description="Albert API Token")
@@ -59,12 +60,47 @@ class Config(BaseConfig):
     albert_chat_id: int | None = Field(None, description="Current chat id")
     albert_stream_id: int | None = Field(None, description="Current stream id")
 
+    def is_authorized(self, sender_id: str) -> bool:
+        if not hasattr(self, "authorized") or self.authorized is None:
+            # The authorization status is not known yet, it might be because:
+            # - it's the first time the user talks to the bot
+            # - the bot has been restarted and lost the user config
+            # For both cases, we need to check it in the persistent storage
+            if not bot_lib_config.users.get(sender_id):
+                self.authorized = False
+                # Add user to pending users list
+                bot_lib_config.users[sender_id] = {"authorized": False, "has_activity": False}
+                bot_lib_config.save_users()
+            else:
+                self.authorized = bot_lib_config.users[sender_id]["authorized"]
+        return self.authorized
+
+    def has_activity(self, sender_id: str) -> bool:
+        if not hasattr(self, "last_activity") or self.last_activity is None:
+            # The last_activity is not known, it might be because:
+            # - it's the first time the user talks to the bot
+            # - the bot has been restarted and lost the user config
+            # For this last case, we need to check it in the persistent storage
+            if not bot_lib_config.users.get(sender_id):
+                logger.error(f"User {sender_id} doesn't exist in the users list")
+            else:
+                return bot_lib_config.users[sender_id]["has_activity"]
+        else:
+            return True
+
+    def update_last_activity(self, sender_id: str) -> None:
+        if not hasattr(self, "last_activity") or self.last_activity is None:
+            self.last_activity = int(time.time())
+            bot_lib_config.users[sender_id]["has_activity"] = True
+            bot_lib_config.save_users()
+        else:
+            self.last_activity = int(time.time())
+
     @property
     def is_conversation_obsolete(self) -> bool:
-        return int(time.time()) - self.last_activity > bot_lib_config.conversation_obsolescence
-
-    def update_last_activity(self) -> None:
-        self.last_activity = int(time.time())
+        if self.last_activity:
+            return int(time.time()) - self.last_activity > bot_lib_config.conversation_obsolescence
+        return False
 
 
 env_config = Config()

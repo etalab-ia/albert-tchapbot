@@ -15,7 +15,7 @@ from nio import (
 )
 
 from .client import MatrixClient
-from .config import bot_lib_config, logger
+from .config import logger
 from .eventparser import (
     EventNotConcerned,
     EventParser,
@@ -82,7 +82,6 @@ class Callbacks:
                 )
 
             ep.do_not_accept_own_message()  # avoid infinite loop
-            await ep.only_allowed_sender()  # only allowed senders
             await func(ep=ep, matrix_client=self.matrix_client)
 
         self.client_callback.append((wrapped_func, onEvent))
@@ -101,8 +100,7 @@ class Callbacks:
 
     async def setup_callbacks(self):
         """Add callbacks to async_client"""
-        if bot_lib_config.join_on_invite:
-            self.matrix_client.add_event_callback(self.invite_callback, InviteMemberEvent)
+        self.matrix_client.add_event_callback(self.invite_callback, InviteMemberEvent)
 
         self.matrix_client.add_event_callback(self.decryption_failure, MegolmEvent)
 

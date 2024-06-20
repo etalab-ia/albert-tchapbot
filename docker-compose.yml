@@ -11,7 +11,6 @@ services:
       - VERBOSE=true
       - SYSTEMD_LOGGING=True
       - SESSION_PATH=/data/session.txt
-      - JOIN_ON_INVITE=${JOIN_ON_INVITE}
       - SALT=${SALT}
       - MATRIX_HOME_SERVER=${MATRIX_HOME_SERVER}
       - MATRIX_BOT_USERNAME=${MATRIX_BOT_USERNAME}

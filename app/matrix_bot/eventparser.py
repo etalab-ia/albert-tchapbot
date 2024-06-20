@@ -10,7 +10,7 @@ from config import env_config
 from nio import Event, MatrixRoom, RoomMessageText
 
 from .client import MatrixClient
-from .config import logger
+from .config import bot_lib_config, logger
 from .room_utils import room_is_direct_message
 
 
@@ -40,7 +40,7 @@ class EventParser:
     def is_from_this_bot(self) -> bool:
         return self.is_from_userid(self.matrix_client.user_id)
 
-    def is_sender_allowed(self) -> bool:
+    def is_sender_domain_allowed(self) -> bool:
         if "*" in env_config.user_allowed_domains:
             return True
         return self.sender_domain() in env_config.user_allowed_domains
@@ -94,14 +94,22 @@ class EventParser:
         if not self.event.source.get("content", {}).get("membership") == "invite":
             raise EventNotConcerned
 
-    async def only_allowed_sender(self) -> None:
+    async def only_allowed_sender(self, user_config) -> None:
         """
         :raise EventNotConcerned: if the sender is not allowed to send messages
         """
-        if not self.is_sender_allowed():
+        if not self.is_sender_domain_allowed():
+            await self.matrix_client.send_text_message(
+                self.room.room_id,
+                "Albert n'est pas encore disponible pour votre domaine. Merci de rester en contact, il sera disponible après un beta test.",
+                msgtype="m.notice",
+            )
+            raise EventNotConcerned
+        if not user_config.is_authorized(self.sender):
             await self.matrix_client.send_markdown_message(
                 self.room.room_id,
-                "Albert n'est pas encore disponible pour votre domaine. Merci de rester en contact, il sera disponible après un beta test !",
+                "Albert est en phase de test et n'est pas encore disponible pour votre utilisateur. Contactez albert-contact@data.gouv.fr pour demander un accès.",
+                msgtype="m.notice",
             )
             raise EventNotConcerned
 

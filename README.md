@@ -54,7 +54,6 @@ cp app/.env.example app/.env
 
 Les variables d'environnement à renseigner sont les suivantes :
 
-- `JOIN_ON_INVITE` : booléen facultatif pour activer ou non l'acceptation automatique des invitations dans les salons (exemple : `JOIN_ON_INVITE=True`. Par défaut, `False`)
 - `SALT` : il est conseillé de changer la valeur du salt pour ne pas avoir celle par défaut. Il faudra en revanche qu'elle de change pas entre deux sessions.
 - `MATRIX_HOME_SERVER` : l'URL du serveur Matrix à utiliser (exemple : `MATRIX_HOME_SERVER="https://matrix.agent.ministere_example.tchap.gouv.fr"`)
 - `MATRIX_BOT_USERNAME` : le nom d'utilisateur du bot Matrix (exemple : `MATRIX_BOT_USERNAME="tchapbot@ministere_example.gouv.fr"`)
@@ -167,7 +166,6 @@ cp app/.env.example app/.env
 
 The following environment variables must be entered:
 
-- `JOIN_ON_INVITE`: optional boolean to enable or disable automatic acceptance of invitations to Tchap rooms (example: `JOIN_ON_INVITE=True`. Default: `False`).
 - `SALT`: it is advisable to change the salt value to avoid having the default one. However, it must not change between sessions.
 - `MATRIX_HOME_SERVER`: the URL of the Matrix server to be used (example: `MATRIX_HOME_SERVER=“https://matrix.agent.ministere_example.tchap.gouv.fr”`).
 - `MATRIX_BOT_USERNAME`: the Matrix bot username (example: `MATRIX_BOT_USERNAME=“tchapbot@ministere_example.gouv.fr”`)
