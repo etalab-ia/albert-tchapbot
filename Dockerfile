@@ -7,3 +7,5 @@ ADD ./app ./app
 ADD ./pyproject.toml ./app/pyproject.toml
 
 WORKDIR /code/app
+
+CMD ["python3", "."]
